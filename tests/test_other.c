@@ -131,9 +131,9 @@ START_TEST(truncate_negative_zero_is_zero) {
 }
 END_TEST
 
-Suite *s21_other_suite(void) {
-  Suite *s = suite_create("other_floor_truncate_negate");
-  TCase *tc = tcase_create("core");
+Suite* s21_other_suite(void) {
+  Suite* s = suite_create("other_floor_truncate_negate");
+  TCase* tc = tcase_create("core");
 
   tcase_add_test(tc, truncate_scale_2_positive);
   tcase_add_test(tc, truncate_scale_3_negative);

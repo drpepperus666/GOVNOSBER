@@ -46,9 +46,9 @@ START_TEST(from_int_sets_scale_zero) {
 }
 END_TEST
 
-Suite *s21_converters_suite(void) {
-  Suite *s = suite_create("from_int_to_decimal");
-  TCase *tc = tcase_create("core");
+Suite* s21_converters_suite(void) {
+  Suite* s = suite_create("from_int_to_decimal");
+  TCase* tc = tcase_create("core");
 
   tcase_add_test(tc, from_int_int_min);
   tcase_add_test(tc, from_int_positive);

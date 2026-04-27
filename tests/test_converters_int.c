@@ -92,9 +92,9 @@ START_TEST(to_int_negative_scale_28_truncates_to_zero) {
 }
 END_TEST
 
-Suite *s21_converters_int_suite(void) {
-  Suite *s = suite_create("from_decimal_to_int");
-  TCase *tc = tcase_create("core");
+Suite* s21_converters_int_suite(void) {
+  Suite* s = suite_create("from_decimal_to_int");
+  TCase* tc = tcase_create("core");
 
   tcase_add_test(tc, to_int_truncate_fraction_12_99_to_12);
   tcase_add_test(tc, to_int_negative_truncate_fraction);

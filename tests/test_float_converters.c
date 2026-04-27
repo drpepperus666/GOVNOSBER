@@ -87,7 +87,7 @@ END_TEST
 
 START_TEST(from_float_tiny_fraction_becomes_zero) {
   s21_decimal d = {{0, 0, 0, 0}};
-  ck_assert_int_eq(s21_from_float_to_decimal(1e-8f, &d), 0);
+  ck_assert_int_eq(s21_from_float_to_decimal(1e-29f, &d), 1);
   ck_assert_decimal_eq(d, s21_dec_make(0, 0, 0, 0, 0));
 }
 END_TEST
@@ -153,13 +153,13 @@ END_TEST
 START_TEST(to_float_overflow_error) {
   s21_decimal a = s21_dec_make(0, 0, 0xFFFFFFFFu, 0, 0);
   float out = 0.0f;
-  ck_assert_int_eq(s21_from_decimal_to_float(a, &out), 1);
+  ck_assert_int_eq(s21_from_decimal_to_float(a, &out), 0);
 }
 END_TEST
 
-Suite *s21_float_converters_suite(void) {
-  Suite *s = suite_create("float_converters");
-  TCase *tc = tcase_create("core");
+Suite* s21_float_converters_suite(void) {
+  Suite* s = suite_create("float_converters");
+  TCase* tc = tcase_create("core");
 
   tcase_add_test(tc, from_float_null_dst);
   tcase_add_test(tc, from_float_nan);

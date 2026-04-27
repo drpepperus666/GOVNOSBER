@@ -153,9 +153,9 @@ START_TEST(sub_min_minus_one_error_2) {
 }
 END_TEST
 
-Suite *s21_arithmetic_basic_suite(void) {
-  Suite *s = suite_create("add_sub_boundaries");
-  TCase *tc = tcase_create("core");
+Suite* s21_arithmetic_basic_suite(void) {
+  Suite* s = suite_create("add_sub_boundaries");
+  TCase* tc = tcase_create("core");
 
   tcase_add_test(tc, add_alignment_scale_28);
   tcase_add_test(tc, add_alignment_scale_28_negative);

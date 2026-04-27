@@ -1,0 +1,1 @@
+genhtml -o gcov_report s21_decimal_filtered.info

@@ -97,9 +97,9 @@ START_TEST(round_null_result) {
 }
 END_TEST
 
-Suite *s21_round_suite(void) {
-  Suite *s = suite_create("round_bankers");
-  TCase *tc = tcase_create("core");
+Suite* s21_round_suite(void) {
+  Suite* s = suite_create("round_bankers");
+  TCase* tc = tcase_create("core");
 
   tcase_add_test(tc, round_bankers_0_5_to_0);
   tcase_add_test(tc, round_bankers_1_5_to_2);

@@ -206,9 +206,9 @@ START_TEST(div_negative_fraction_sign) {
 }
 END_TEST
 
-Suite *s21_arithmetic_complex_suite(void) {
-  Suite *s = suite_create("mul_div_boundaries");
-  TCase *tc = tcase_create("core");
+Suite* s21_arithmetic_complex_suite(void) {
+  Suite* s = suite_create("mul_div_boundaries");
+  TCase* tc = tcase_create("core");
 
   tcase_add_test(tc, mul_by_zero_left);
   tcase_add_test(tc, mul_by_zero_right);

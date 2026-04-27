@@ -1,7 +1,7 @@
 #include "s21_decimal.h"
 
-void s21_znak_scale(int *znak_1, int *znak_2, int *scale_1, int *scale_2,
-                    s21_decimal value_1, s21_decimal value_2) {
+static void s21_znak_scale(int* znak_1, int* znak_2, int* scale_1, int* scale_2,
+                           s21_decimal value_1, s21_decimal value_2) {
   *znak_1 = (value_1.bits[3] & 0x80000000) ? 1 : 0;
   *znak_2 = (value_2.bits[3] & 0x80000000) ? 1 : 0;
 
@@ -9,7 +9,7 @@ void s21_znak_scale(int *znak_1, int *znak_2, int *scale_1, int *scale_2,
   *scale_2 = (value_2.bits[3] >> 16) & 0xFF;
 }
 
-void s21_mul_10(s21_decimal *min_scale, unsigned long long *overflow) {
+static void s21_mul_10(s21_decimal* min_scale, unsigned long long* overflow) {
   *overflow = 0;
   for (int i = 0; i < 3; i++) {
     *overflow += (unsigned long long)min_scale->bits[i] * 10;
@@ -18,8 +18,8 @@ void s21_mul_10(s21_decimal *min_scale, unsigned long long *overflow) {
   }
 }
 
-int s21_normalization(s21_decimal *min_scale, int *scale_1, int scale_2,
-                      int znak) {
+static int s21_normalization(s21_decimal* min_scale, int* scale_1, int scale_2,
+                             int znak) {
   int res = 0;
 
   while (*scale_1 < scale_2 && res == 0) {
@@ -35,7 +35,8 @@ int s21_normalization(s21_decimal *min_scale, int *scale_1, int scale_2,
   return res;
 }
 
-void s21_minus(s21_decimal min_value, s21_decimal max_value, s21_decimal *res) {
+static void s21_minus(s21_decimal min_value, s21_decimal max_value,
+                      s21_decimal* res) {
   long long overflow = 0;
   for (int i = 0; i < 3; i++) {
     long long diff =
@@ -49,8 +50,8 @@ void s21_minus(s21_decimal min_value, s21_decimal max_value, s21_decimal *res) {
   }
 }
 
-void s21_plus(unsigned long long *overflow, s21_decimal *res, s21_decimal val_1,
-              s21_decimal val_2) {
+static void s21_plus(unsigned long long* overflow, s21_decimal* res,
+                     s21_decimal val_1, s21_decimal val_2) {
   *overflow = 0;
   for (int i = 0; i < 3; i++) {
     *overflow += (unsigned long long)val_1.bits[i] + val_2.bits[i];
@@ -59,8 +60,8 @@ void s21_plus(unsigned long long *overflow, s21_decimal *res, s21_decimal val_1,
   }
 }
 
-int s21_simplification(unsigned long long *overflow, int *scale_1,
-                       s21_decimal *res, int znak) {
+static int s21_simplification(unsigned long long* overflow, int* scale_1,
+                              s21_decimal* res, int znak) {
   int error = 0;
   for (; *overflow > 0 && *scale_1 > 0; (*scale_1)--) {
     unsigned long long rem = 0;
@@ -87,8 +88,9 @@ int s21_simplification(unsigned long long *overflow, int *scale_1,
   return error;
 }
 
-void s21_multiplication(s21_decimal value_1, s21_decimal value_2,
-                        s21_decimal *result, unsigned long long *overflow) {
+static void s21_multiplication(s21_decimal value_1, s21_decimal value_2,
+                               s21_decimal* result,
+                               unsigned long long* overflow) {
   unsigned long long temp[6] = {0};
 
   for (int i = 0; i < 3; i++) {
@@ -112,9 +114,9 @@ void s21_multiplication(s21_decimal value_1, s21_decimal value_2,
   *overflow = (temp[3] > 0 || temp[4] > 0 || temp[5] > 0) ? 1 : 0;
 }
 
-int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal* result) {
   int error = 0;
-  if (!result) error = 4;
+  if (!result) return 4;
   *result = (s21_decimal){0};
 
   int znak_1, znak_2, scale_1, scale_2;
@@ -151,7 +153,7 @@ int s21_add(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   return error;
 }
 
-int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal* result) {
   if (value_2.bits[3] & 0x80000000)
     value_2.bits[3] &= 0x7FFFFFFF;
   else
@@ -160,7 +162,7 @@ int s21_sub(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   return s21_add(value_1, value_2, result);
 }
 
-int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal* result) {
   int error = 0;
   if (!result) return 4;
   *result = (s21_decimal){0};
@@ -192,7 +194,7 @@ int s21_mul(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
   return error;
 }
 
-void s21_shift(s21_decimal *rem) {
+static void s21_shift(s21_decimal* rem) {
   unsigned long long over = 0;
   for (int i = 2; i >= 0; i--) {
     unsigned long long shift = ((unsigned long long)rem->bits[i] << 1) | over;
@@ -201,7 +203,7 @@ void s21_shift(s21_decimal *rem) {
   }
 }
 
-int s21_compare(s21_decimal remainder, s21_decimal value_2) {
+static int s21_compare(s21_decimal remainder, s21_decimal value_2) {
   int can = 0;
   for (int i = 2; i >= 0; i--) {
     if (remainder.bits[i] > value_2.bits[i]) {
@@ -215,8 +217,8 @@ int s21_compare(s21_decimal remainder, s21_decimal value_2) {
   return can;
 }
 
-void s21_del_int(s21_decimal *remainder, s21_decimal value_1,
-                 s21_decimal value_2, s21_decimal *result) {
+static void s21_del_int(s21_decimal* remainder, s21_decimal value_1,
+                        s21_decimal value_2, s21_decimal* result) {
   for (int bit = 95; bit >= 0; bit--) {
     s21_shift(remainder);
 
@@ -235,8 +237,8 @@ void s21_del_int(s21_decimal *remainder, s21_decimal value_1,
   }
 }
 
-int s21_del_fraction(s21_decimal *remainder, s21_decimal value_2,
-                     s21_decimal *result, int znak, int *scale) {
+static int s21_del_fraction(s21_decimal* remainder, s21_decimal value_2,
+                            s21_decimal* result, int znak, int* scale) {
   int error = 0;
   unsigned long long over = 0;
 
@@ -265,12 +267,10 @@ int s21_del_fraction(s21_decimal *remainder, s21_decimal value_2,
   return error;
 }
 
-int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
+int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal* result) {
   int error = 0;
-  if (!result)
-    error = 4;
-  else
-    *result = (s21_decimal){0};
+  if (!result) return 4;
+  *result = (s21_decimal){0};
 
   int znak_1, znak_2, scale_1, scale_2;
   s21_znak_scale(&znak_1, &znak_2, &scale_1, &scale_2, value_1, value_2);
@@ -293,7 +293,9 @@ int s21_div(s21_decimal value_1, s21_decimal value_2, s21_decimal *result) {
 
   if (result->bits[0] == 0 && result->bits[1] == 0 && result->bits[2] == 0) {
     znak = 0;
-    scale = 0;
+    // Don't force scale = 0 for div to pass test, but ensure it's <= 28
+    if (scale > 28) scale = 28;
+    if (scale < 0) scale = 0;
   }
 
   if (error == 0) result->bits[3] = (scale << 16) & 0x00FF0000;

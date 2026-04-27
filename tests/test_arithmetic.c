@@ -55,9 +55,9 @@ START_TEST(add_pos_zero_plus_neg_zero_is_pos_zero) {
 }
 END_TEST
 
-Suite *s21_arithmetic_suite(void) {
-  Suite *s = suite_create("add_sub_smoke");
-  TCase *tc = tcase_create("core");
+Suite* s21_arithmetic_suite(void) {
+  Suite* s = suite_create("add_sub_smoke");
+  TCase* tc = tcase_create("core");
 
   tcase_add_test(tc, add_simple_positive);
   tcase_add_test(tc, add_scale_normalization);

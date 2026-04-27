@@ -1,6 +1,6 @@
 #include "s21_decimal.h"
 
-int s21_from_int_to_decimal(int src, s21_decimal *dst) {
+int s21_from_int_to_decimal(int src, s21_decimal* dst) {
   int error = 0;
   if (!dst) {
     error = 1;
@@ -16,7 +16,7 @@ int s21_from_int_to_decimal(int src, s21_decimal *dst) {
   return error;
 }
 
-int s21_from_decimal_to_int(s21_decimal src, int *dst) {
+int s21_from_decimal_to_int(s21_decimal src, int* dst) {
   int error = 0;
   if (!dst) {
     error = 1;

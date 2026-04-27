@@ -1,21 +1,21 @@
 #include <check.h>
+#include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <fcntl.h>
 
-Suite *s21_arithmetic_suite(void);
-Suite *s21_arithmetic_complex_suite(void);
-Suite *s21_arithmetic_basic_suite(void);
-Suite *s21_comparison_suite(void);
-Suite *s21_converters_suite(void);
-Suite *s21_converters_int_suite(void);
-Suite *s21_float_converters_suite(void);
-Suite *s21_other_suite(void);
-Suite *s21_round_suite(void);
+Suite* s21_arithmetic_suite(void);
+Suite* s21_arithmetic_complex_suite(void);
+Suite* s21_arithmetic_basic_suite(void);
+Suite* s21_comparison_suite(void);
+Suite* s21_converters_suite(void);
+Suite* s21_converters_int_suite(void);
+Suite* s21_float_converters_suite(void);
+Suite* s21_other_suite(void);
+Suite* s21_round_suite(void);
 
-static int run_module(Suite *suite, const char *function_name) {
-  SRunner *sr = srunner_create(suite);
+static int run_module(Suite* suite, const char* function_name) {
+  SRunner* sr = srunner_create(suite);
   srunner_set_fork_status(sr, CK_NOFORK);
 
   int null_fd = open("/dev/null", O_WRONLY);
@@ -59,15 +59,14 @@ int main(void) {
   failed_total += run_module(s21_arithmetic_suite(), "s21_add");
   failed_total += run_module(s21_arithmetic_complex_suite(), "s21_mul");
   failed_total += run_module(s21_arithmetic_basic_suite(), "s21_sub");
-  failed_total += run_module(s21_comparison_suite(),
-                             "s21_is_less/greater/equal");
+  failed_total +=
+      run_module(s21_comparison_suite(), "s21_is_less/greater/equal");
   failed_total += run_module(s21_converters_suite(), "s21_from_int_to_decimal");
-  failed_total += run_module(s21_converters_int_suite(),
-                             "s21_from_decimal_to_int");
-  failed_total += run_module(s21_float_converters_suite(),
-                             "s21_from_float_to_decimal");
-  failed_total += run_module(s21_other_suite(),
-                             "s21_truncate/negate/floor");
+  failed_total +=
+      run_module(s21_converters_int_suite(), "s21_from_decimal_to_int");
+  failed_total +=
+      run_module(s21_float_converters_suite(), "s21_from_float_to_decimal");
+  failed_total += run_module(s21_other_suite(), "s21_truncate/negate/floor");
   failed_total += run_module(s21_round_suite(), "s21_round");
 
   printf("\n");

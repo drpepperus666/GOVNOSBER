@@ -38,8 +38,8 @@ START_TEST(compare_same_value_different_scales_negative) {
 END_TEST
 
 START_TEST(less_with_scale_alignment) {
-  s21_decimal a = s21_dec_make(9, 0, 0, 0, 0);    // 9
-  s21_decimal b = s21_dec_make(10, 0, 0, 1, 0);   // 1.0
+  s21_decimal a = s21_dec_make(9, 0, 0, 0, 0);   // 9
+  s21_decimal b = s21_dec_make(10, 0, 0, 1, 0);  // 1.0
 
   ck_assert_int_eq(s21_is_less(a, b), 0);
   ck_assert_int_eq(s21_is_greater(a, b), 1);
@@ -124,9 +124,9 @@ START_TEST(compare_high_mantissa) {
 }
 END_TEST
 
-Suite *s21_comparison_suite(void) {
-  Suite *s = suite_create("comparison_operators");
-  TCase *tc = tcase_create("core");
+Suite* s21_comparison_suite(void) {
+  Suite* s = suite_create("comparison_operators");
+  TCase* tc = tcase_create("core");
 
   tcase_add_test(tc, eq_zero_pos_vs_neg);
   tcase_add_test(tc, eq_scale_ignored_1_0_vs_1_00);
