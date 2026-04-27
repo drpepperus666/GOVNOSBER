@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "../s21_decimal.h"
+#include "s21_decimal.h"
 
 // Helper function to create s21_decimal
 static inline s21_decimal s21_dec_make(unsigned int bit0, unsigned int bit1,

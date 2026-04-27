@@ -1,19 +1,4 @@
 # S21 Decimal Library - Makefile
-# 
-# Available targets:
-#   make all              - Build s21_decimal.a library
-#   make s21_decimal.a    - Build s21_decimal.a library (explicit)
-#   make test             - Build and run unit tests
-#   make gcov_report      - Generate code coverage report (HTML)
-#   make gcov             - Generate coverage report and open in browser
-#   make clean            - Remove build artifacts
-#   make rebuild          - Clean and rebuild everything
-#   make style            - Check code style (Google C++ Style)
-#   make style-fix        - Fix code style automatically
-#   make check            - Run cppcheck static analyzer
-#   make valgrind         - Run memory leak check (Linux)
-#   make leaks            - Run memory leak check (macOS)
-#   make run              - Run tests and report results
 
 LIB = s21_decimal.a
 TEST_LIB = $(addprefix test_, $(LIB))
@@ -35,13 +20,14 @@ ifeq ($(shell gcc --version | head -1 | grep -o '13'), 13)
 endif
 
 # Standard flags
-FLAGS = -Wall -Werror -Wextra -std=c11 -g
+FLAGS = -Wall -Werror -Wextra -std=c11 -g -Isrc
 GFLAGS = -fprofile-arcs -ftest-coverage
 
 # Check flags (preferred)
 CHFLAGS = $(shell pkg-config --cflags --libs check)
 
 # Directories
+SRC_DIR = src
 TEST_DIR = tests
 BUILD_DIR = build
 BUILD_LIB_DIR = $(BUILD_DIR)/library
@@ -50,10 +36,10 @@ TEST_BUILD_DIR = $(BUILD_DIR)/gcov_library
 GCOV_DIR = gcov_report
 
 # Files
-S21_SOURCES = $(wildcard s21_*.c)
+S21_SOURCES = $(wildcard $(SRC_DIR)/s21_*.c)
 TESTS = $(wildcard $(TEST_DIR)/test_*.c)
-S21_OBJECTS = $(addprefix $(BUILD_LIB_DIR)/, $(S21_SOURCES:.c=.o))
-TEST_S21_OBJECTS = $(addprefix $(TEST_BUILD_DIR)/, $(S21_SOURCES:.c=.o))
+S21_OBJECTS = $(addprefix $(BUILD_LIB_DIR)/, $(notdir $(S21_SOURCES:.c=.o)))
+TEST_S21_OBJECTS = $(addprefix $(TEST_BUILD_DIR)/, $(notdir $(S21_SOURCES:.c=.o)))
 TEST_OBJECTS = $(addprefix $(BUILD_TEST_DIR)/, $(notdir $(TESTS:.c=.o)))
 
 # Linker libs for Check (Linux needs extras)
@@ -74,11 +60,10 @@ all: $(LIB)
 # BUILD & RUN TESTS (WITH TEST LIB)
 ###############################################
 
-# IMPORTANT: library must be last in link line (keeps School21 happy)
 test: $(TEST_OBJECTS) $(TEST_LIB)
 	$(CC) $(FLAGS) $^ -o $@ $(CHECK_LIBS) $(GFLAGS) -lm
 
-$(TEST_OBJECTS): $(BUILD_TEST_DIR)/%.o : $(TEST_DIR)/%.c $(TEST_DIR)/test_common.h s21_decimal.h
+$(TEST_OBJECTS): $(BUILD_TEST_DIR)/%.o : $(TEST_DIR)/%.c $(TEST_DIR)/test_common.h $(SRC_DIR)/s21_decimal.h
 	@mkdir -p $(BUILD_TEST_DIR)
 	$(CC) $(FLAGS) $(GFLAGS) -I$(TEST_DIR) $(shell pkg-config --cflags check) -c $< -o $@ $(WNO)
 
@@ -89,7 +74,7 @@ $(TEST_OBJECTS): $(BUILD_TEST_DIR)/%.o : $(TEST_DIR)/%.c $(TEST_DIR)/test_common
 $(TEST_LIB): $(TEST_S21_OBJECTS)
 	ar -rcs $@ $^
 
-$(TEST_S21_OBJECTS): $(TEST_BUILD_DIR)/%.o : %.c s21_decimal.h
+$(TEST_S21_OBJECTS): $(TEST_BUILD_DIR)/%.o : $(SRC_DIR)/%.c $(SRC_DIR)/s21_decimal.h $(SRC_DIR)/s21_internal.h
 	@mkdir -p $(TEST_BUILD_DIR)
 	$(CC) $(FLAGS) $(GFLAGS) -c $< -o $@
 
@@ -103,7 +88,7 @@ s21_decimal.a: $(S21_OBJECTS)
 $(LIB): $(S21_OBJECTS)
 	ar -rcs $@ $^
 
-$(S21_OBJECTS): $(BUILD_LIB_DIR)/%.o : %.c s21_decimal.h
+$(S21_OBJECTS): $(BUILD_LIB_DIR)/%.o : $(SRC_DIR)/%.c $(SRC_DIR)/s21_decimal.h
 	@mkdir -p $(BUILD_LIB_DIR)
 	$(CC) $(FLAGS) -c $< -o $@
 
@@ -121,13 +106,11 @@ gcov: gcov_report
 run: test
 	-./test || true
 
-# Tests may crash; still try to generate a report.
 gcov_report: $(LIB) test $(GCOV_DIR)/index.html
 
 $(GCOV_DIR)/index.html: $(LIB) test
 	@mkdir -p $(GCOV_DIR)
 	@-./test || true
-	# baseline helps when no .gcda produced due to crash
 	lcov -t "s21_decimal" --capture --initial -d $(BUILD_DIR) --ignore-errors empty --ignore-errors unused -o s21_decimal.base.info
 	lcov -t "s21_decimal" --capture -d $(BUILD_DIR) --ignore-errors empty --ignore-errors unused -o s21_decimal.run.info
 	lcov -a s21_decimal.base.info -a s21_decimal.run.info -o s21_decimal.info --ignore-errors empty --ignore-errors unused
@@ -141,13 +124,13 @@ $(GCOV_DIR)/index.html: $(LIB) test
 
 style:
 	@echo "Checking style..."
-	@clang-format -style=Google -n *.c *.h
+	@clang-format -style=Google -n $(SRC_DIR)/*.c $(SRC_DIR)/*.h
 	@clang-format -style=Google -n $(TEST_DIR)/*.c $(TEST_DIR)/*.h
 	@echo "Style check completed!"
 
 style-fix:
 	@echo "Fixing style..."
-	@clang-format -style=Google -i *.c *.h
+	@clang-format -style=Google -i $(SRC_DIR)/*.c $(SRC_DIR)/*.h
 	@clang-format -style=Google -i $(TEST_DIR)/*.c $(TEST_DIR)/*.h
 	@echo "Style fix completed!"
 
